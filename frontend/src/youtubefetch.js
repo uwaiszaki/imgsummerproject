@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 //const key = "AIzaSyAOYG1Ai4mZy6L-ifZgQ8bzS87vA6v3jdA";
 //const oldkey = "AIzaSyA-KsE-v70lQ5iDQUtShISxG5NqzGIqUVY";
 const url = "https://www.googleapis.com/youtube/v3/search?key=AIzaSyA-KsE-v70lQ5iDQUtShISxG5NqzGIqUVY&part=snippet,id&q=";
-const a = "&videoDuration=any&order=viewCount&maxResults=2";
+const a = "&videoDuration=any&order=viewCount&maxResults=10";
 
 
 class Youtube extends Component {
@@ -46,38 +46,32 @@ class Youtube extends Component {
   {
     //const History =  createBrowserHistory();
   return(
-        <div>
-          <form  onSubmit={this.handleSubmit}>
-            Search<input type="text" name="videoname" value={this.state.videoname}  onChange = {this.handleChange} /><br/>
-            <input type='submit' />
-          </form>
           
+        <div>
+         {  
+           (localStorage.getItem('token')) ?
+             <div> 
+                <form  onSubmit={this.handleSubmit}>
+                  Search On Youtube<input type="text" name="videoname" value={this.state.videoname}  onChange = {this.handleChange} /><br/>
+                  <input type='submit' /></form>
+              </div>  : null
+          }     
           { 
-            this.state.resultyt.map((link , i)=> {  
+              this.state.resultyt.map((link , i)=> {  
               
-              return( 
-              <span key={i}  onClick={this.selectVideo}> <iframe width="560" height="315" src={link} frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen  ></iframe> <br/></span>
-              );                                    }
+                return( 
+                <div key={i}  > <iframe width="560" height="315" src={link} frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen  ></iframe> <hr/></div>
+                );                                  }
                                     )
           }
           
-        </div>
+          </div>
     );
 
   }
 }
 
-class Video extends React.Component
-{
-  render()
-  {
-    return(
-        <div> HEllo </div>
-    );
 
-  }
-
-} 
 
 
 export default Youtube;
