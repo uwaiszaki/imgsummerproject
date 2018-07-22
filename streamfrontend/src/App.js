@@ -7,9 +7,10 @@ import { Dropdown, Button, Header, Icon, Image, Menu, Segment, Sidebar   , Tab ,
 import Login from './login.js';
 import { BrowserRouter as Router, Switch, Route, Link , Redirect } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
-import MainStream from './stream.js';
 import {Search} from './stream.js';
 import { websocket } from './websocket.js';
+import InputSlider from 'react-input-slider';
+import ReactPlayer from 'react-player';
 
 class App extends Component{
 
@@ -18,13 +19,16 @@ class App extends Component{
   {
     super(props);
     
-    this.state = { url:""  , urll:"", playing:true , muted:false , volume:0.5 , currtime:0 , visible:false };
+    this.state = { url:"https://www.youtube.com/watch?v=H2f7MZaw3Yo", playing:true , muted:false , volume:0.5 , currtime:0 , visible:false , duration:100};
     this.componentDidMount = this.componentDidMount.bind(this);
     this.handlePlay = this.handlePlay.bind(this);
     this.handlePause = this.handlePause.bind(this);
     this.handleProgress = this.handleProgress.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleDuration=this.handleDuration.bind(this);
+    this.handleTimeChange=this.handleTimeChange.bind(this);
+
     //this.handleDuration = this.handleDuration.bind(this);
     //this.handleEnd = this.handleEnd.bind(this);
     //this.handleError = this.handleError.bind(this);
@@ -47,7 +51,7 @@ class App extends Component{
       let data = JSON.parse(event.data);
       if(data['currtime'] !== this.state.currtime )
       {
-        this.refs.player.seekTo(data['currtime']);
+        this.player.seekTo(data['currtime']);
 
       }
       this.setState({
@@ -56,9 +60,10 @@ class App extends Component{
         muted : data['muted'] ,
         volume : data['volume'] ,
         currtime : data['currtime'] , 
+        duration : data['duration'] , 
 
       });
-        this.refs.player.volume = this.state.volume;
+        this.player.volume = this.state.volume;
         console.log(this.state);
         console.log('componentDidMount');
     }
@@ -67,6 +72,8 @@ class App extends Component{
       
 
   } 
+
+
   handlePlay()
   {
     this.setState({playing:true});
@@ -76,6 +83,7 @@ class App extends Component{
       muted:this.state.muted , 
       volume:this.state.volume , 
       currtime : this.state.currtime ,
+      duration : this.state.duration , 
     };
     websocket.send(JSON.stringify(data));
     console.log("handlePlay");
@@ -90,13 +98,14 @@ class App extends Component{
       muted:this.state.muted , 
       volume:this.state.volume , 
       currtime : this.state.currtime ,
+      duration : this.state.duration ,
     };
     websocket.send(JSON.stringify(data));
     console.log("handlePause");
   }
   handleProgress(progressinfo)
   { 
-    this.setState({ currtime:progressinfo['playedSeconds']});
+    this.setState({ currtime:progressinfo['playedSeconds'] });
     
     let data = {
       url :this.state.url , 
@@ -104,24 +113,39 @@ class App extends Component{
       muted:this.state.muted , 
       volume:this.state.volume , 
       currtime : this.state.currtime ,
+      duration : this.state.duration ,
     };
     websocket.send(JSON.stringify(data));
     console.log("handleProgress");  
   }
 
+  handleDuration(duration)
+  {
+  	this.setState({duration:duration});
+  	let data = {
+      url :this.state.url , 
+      playing:this.state.playing ,
+      muted:this.state.muted , 
+      volume:this.state.volume , 
+      currtime : this.state.currtime ,
+      duration : this.state.duration ,
+    };
+    websocket.send(JSON.stringify(data));
+    console.log("handleDuration");  
+  }
 
-
-  handleSubmit(event)
+  handleSubmit(url)
   {
     event.preventDefault();
 
-    this.setState({url:this.state.urll});
-    console.log(this.state.url);
+    this.setState({url:url} , console.log(this.state.url));
+    
 
   }
-  handleChange(event)
+
+  handleChange(newstate)
   {
-    this.setState({urll:event.target.value});
+    this.setState(newstate);
     console.log(this.state.url);
   }
 
@@ -131,13 +155,45 @@ class App extends Component{
     console.log(this.state.url);
   }
 
+  handleTimeChange(event)
+  {
+  	this.setState({currtime:event.target.value} ,
+  		() => {
+  			this.player.seekTo(this.state.currtime);
+	
+	
+		let data = {
+      	url :this.state.url , 
+      	playing:this.state.playing ,
+      	muted:this.state.muted , 
+      	volume:this.state.volume , 
+      	currtime : this.state.currtime ,
+      	duration : this.state.duration ,
+    	};
+    	websocket.send(JSON.stringify(data));
+    	console.log("Time Of Video Changed");
+
+  		}
+  		); 
+  	
+  }
+
+  ref = (player) => {
+    this.player = player;
+  }  
+
+
+
   render() {
+  	var slider = document.getElementById('timeslider');
+
+  	const that = this;
     return (
  
       <div className="App">
        
         
-        <Sidebar.Pushable as={Segment}>
+        <Sidebar.Pushable as={Segment} >
           <Sidebar
             as={Menu}
             animation='overlay'
@@ -156,7 +212,7 @@ class App extends Component{
             </Menu.Item>
             }
             
-
+            {(browserHistory.location.pathname === '/profile')   ?  null : (localStorage.getItem('token')) ? 
             <Menu.Item as='a' onClick={()=>{ 
                       fetch('http://127.0.0.1:8000/stream/getuser/'+localStorage.getItem('token'))
                       .then(res => res.json())
@@ -174,10 +230,12 @@ class App extends Component{
               <Icon name='address card outline' />
               Profile
             </Menu.Item>
+            : null
+        	}
 
 
             {(localStorage.getItem('token')) ?
-            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/logout");  }}>
+            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/logout"); window.location.reload(); }}>
               <Icon name='camera' />
               Log Out
             </Menu.Item>
@@ -187,7 +245,7 @@ class App extends Component{
 
 
             {(browserHistory.location.pathname !== '/') ?
-            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/");  }}>
+            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/"); window.location.reload(); }}>
               <Icon name='camera' />
               stream
             </Menu.Item>
@@ -195,10 +253,10 @@ class App extends Component{
             }
 
 
-            {(browserHistory.location.pathname !== '/search') ? 
-            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/search");  }}>
+            {(browserHistory.location.pathname === '/search') ? null : (localStorage.getItem('token')) ?  
+            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/search"); window.location.reload(); }}>
               <Icon name='camera' />
-              stream
+              Search
             </Menu.Item>
             :null
             }
@@ -219,68 +277,66 @@ class App extends Component{
                        <Header.Content>Stream</Header.Content>
                        </Header>
                      </div>
-                    {(browserHistory.location.pathname==='/search' )?
-                      
-                    
 
-                    <div className="search">
-                      
-	                		<Grid columns={3} >
-	                  		<Grid.Column>
-	                  
-	                  		</Grid.Column>
-	                  		<Grid.Column>
-	                    		<Form  onSubmit={this.handleSubmit} error size="small">  
-	                    		<Form.Input  fluid label="Search Url" type="text" name="url" value={this.state.urll}  onInput={this.handleChange}
-	                    		  onPaste={this.handlepasteChange.bind(this)}
-	                    		  placeholder="search" />
-	                    
-	                    		<Button icon>
-	                    		Search
-	                    		<Icon name='search' />
-	                    		</Button>
-	                    		</Form> <br/>
-	                  			</Grid.Column>
-	                  			<Grid.Column>
-	                  
-	                  		</Grid.Column>
-	                		</Grid>
-              			
 
-                    </div>
-                    : null
 
-                	}
                     <div className="scroll" >
                     		<BrowserRouter >
-							<div>
-								
-								<Route exact path="/"  render={ () => <MainStream  handlePlay={this.handlePlay} handlePause={this.handlePause} handleProgress={this.handleProgress} 
-								url={this.state.url} playing={this.state.playing}  volume={this.state.volume} muted={this.state.muted} 
-								/>} />
+							<div style={{height:'80vh'}}>
+								<Route exact path="/search"  render={ () => <Search   url={this.state.url} handleSubmit={this.handleSubmit} /> } /> 
+
+								<Route exact path="/"  render={ () => 
+									        <div className='player'>
+          
+          										<ReactPlayer ref={this.ref} url={this.state.url} playing={this.state.playing} 
+          											volume={this.state.volume} muted={this.state.muted} 
+ 	        										onPlay={this.handlePlay} onPause={this.handlePause} 
+ 	        										onProgress={this.handleProgress} onDuration={this.handleDuration} 
+ 	        										style={{height:'70vh' , width:'70vw'  , marginLeft:'7vw'}}
+          
+          										/>
+         
+        									</div>
+
+
+
+								} />
 								
 							</div>
 							</BrowserRouter>
 
 
                     </div>
+
+
               
               
             </Segment>
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-                            <div className="footer" style={{height:'.2vh'} , {marginDown:"0"}}>
-                            <Grid columns={3} divided>
+                            <div className="footer" >
+                            <Grid columns={3} divided className="footer">
                               <Grid.Column width={1} floated="left">
-                                <Icon name="play" />
+                                <Header as="h6" icon textAlign='center'>
+                                {(this.state.playing === false) ?
+                                <Icon name="play" onClick={()=>this.setState({playing:true})}/>
+                                : <Icon name="pause" onClick={()=>this.setState({playing:false})}/>
+                            	}
+                                </Header>
                               </Grid.Column>
-                              <Grid.Column width={13}><Input type="range" min="0" max="100" style={{width:"80vw"}}/>
+                              <Grid.Column width={13}>
+                              		<Input type="range" min="0" max={this.state.duration} 
+                              		value={this.state.currtime} onChange={this.handleTimeChange} style={{width:"80vw"}}/>
                               </Grid.Column>
                               <Grid.Column width={2} floated="right" >
-                                <Icon name="volume up" /> 
-                                <Input type="range" min="0" max="100" style={{width:"5vw"}}/>
+                              	<Header as="h6" icon>
+                                <Icon name="volume up" />
+                                </Header> 
+                                <Input type="range" min="0" max="100" style={{width:"6vw"}} value={this.state.volume} 
+                                	onChange={(e)=> { this.setState({volume:e.target.value});  this.player.volume = this.state.volume;} }/>
                               </Grid.Column>
-                            </Grid>      
+                            </Grid>
+                                 
                             </div>
       
       </div>

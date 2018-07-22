@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   padding: 0;
+  height: 92.4vh;
 }
 
 .App-logo {
@@ -41,6 +42,33 @@
   width: 100vw;
 }
 
+.player
+{
+  height: 60vh ; 
+  width:100vw;
+  padding: 0;
+}
+
+body{
+  padding:0;
+
+}
+
+#root{
+  height: 90vh;
+
+}
+
+.profileinfo{
+  background-color: #ecf0f1;
+  margin: 200px 300px 200px ;
+}
+
+.footer{
+  height: .1vh;
+  margin: 0;
+
+}
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

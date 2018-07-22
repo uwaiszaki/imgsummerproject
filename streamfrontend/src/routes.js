@@ -21,10 +21,16 @@ export class Routes extends React.Component
 								<Route exact path="/login" component={Login} />
 								<Route exact path="/register" component={Signup} />
 								<Route exact path="/"  component={App} />
-								<Route exact path="/logout" component={function(){ localStorage.removeItem('token');  browserHistory.replace("/"); }} />
-								<Route exact path="/profile"  component={Profile} />
+								<Route exact path="/logout" component={function(){ localStorage.removeItem('token');  browserHistory.replace("/");  }} />
+								<Route exact path="/profile" render={() => ( localStorage.getItem('token') ?  
+																			<Profile/> : <Redirect to="/login" />
+																)}
+								/>
 								<Route exact path="/admin"  component={AdminView} />
-								<Route exact path="/search"  component={App} />
+								<Route exact path="/search"  render={() => ( localStorage.getItem('token') ?  
+																			<App/> : <Redirect to="/login" />
+									)}  
+								 />
 							</div>
 						</BrowserRouter>
 					);

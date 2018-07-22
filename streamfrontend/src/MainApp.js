@@ -72,8 +72,8 @@ export default class MainApp extends Component {
             :null
             }
 
-            
-            {(localStorage.getItem('token')) ?
+
+            {(browserHistory.location.pathname === '/stream') ?
             <Menu.Item as='a' onClick={()=>{ this.props.history.push("/logout");  }}>
               <Icon name='camera' />
               Log Out

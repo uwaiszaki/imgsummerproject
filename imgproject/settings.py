@@ -40,11 +40,7 @@ INSTALLED_APPS = [
     'streamapp',
     'rest_framework',
     'rest_framework.authtoken',
-<<<<<<< HEAD
-    #'corsheaders',
-=======
     'corsheaders',
->>>>>>> 4408ea4e5b30da67c2a693ef13e35b4d0e64c0e2
     'channels',
     'streamchannel',
 ]
@@ -57,11 +53,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-<<<<<<< HEAD
-    #'corsheaders.middleware.CorsMiddleware',
-=======
     'corsheaders.middleware.CorsMiddleware',
->>>>>>> 4408ea4e5b30da67c2a693ef13e35b4d0e64c0e2
+
+    
+
 ]
 
 ROOT_URLCONF = 'imgproject.urls'
