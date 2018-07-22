@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import './App.css';
+import {browserHistory} from './historyobj.js';
+import {  Button, Header, Icon, Input ,Form , Grid} from 'semantic-ui-react';
+
 //import { BrowserRouter } from 'react-router-dom';
 //import { BrowserRouter as Route } from 'react-router-dom';
 //import { createBrowserHistory,} from 'history';
 
 //const key = "AIzaSyAOYG1Ai4mZy6L-ifZgQ8bzS87vA6v3jdA";
 //const oldkey = "AIzaSyA-KsE-v70lQ5iDQUtShISxG5NqzGIqUVY";
+
 const url = "https://www.googleapis.com/youtube/v3/search?key=AIzaSyA-KsE-v70lQ5iDQUtShISxG5NqzGIqUVY&part=snippet,id&q=";
 const a = "&videoDuration=any&order=viewCount&maxResults=10";
 
@@ -13,7 +18,7 @@ class Youtube extends Component {
   constructor()
   {
     super();
-    this.state = { resultyt :[] , videoname:""  , videoid:""};
+    this.state = { resultyt :[] , videoname:""  , videoid:"" , visible:false};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -38,6 +43,11 @@ class Youtube extends Component {
   {
     this.setState({videoname: event.target.value});
   }
+
+  handleButtonClick = (event) => { browserHistory.push('/'); window.location.reload(); }
+
+ 
+
   selectVideo(event)
   {
     alert("Clicked on video");
@@ -47,25 +57,56 @@ class Youtube extends Component {
     //const History =  createBrowserHistory();
   return(
           
-        <div>
-         {  
-           (localStorage.getItem('token')) ?
-             <div> 
-                <form  onSubmit={this.handleSubmit}>
-                  Search On Youtube<input type="text" name="videoname" value={this.state.videoname}  onChange = {this.handleChange} /><br/>
-                  <input type='submit' /></form>
-              </div>  : null
-          }     
-          { 
-              this.state.resultyt.map((link , i)=> {  
+             <div className='yplayer'> 
+
+
+
+                              <Button icon onClick={this.handleButtonClick} className="buttonA">
+                              Stream Live  <Icon name='backward'/> 
+                              </Button>
+                     <div className="topheader">
+                       <Header as='h1' icon textAlign='center'>
+                       <Icon name='music' circular />
+                       <Header.Content>Stream On Youtube</Header.Content>
+                       </Header>
+                     </div>
+
+
+                      <Grid columns={3} >
+                        <Grid.Column>
+                    
+                        </Grid.Column>
+                        <Grid.Column>
+
+                          <Form   onSubmit={this.handleSubmit} error size="small">  
+                          <Header as="h3" textAlign='center'> Search </Header>
+                          <Form.Input  fluid  type="text" name="url" value={this.state.videoname}  onChange={this.handleChange}  
+                            placeholder="Search" />
+                          <Button icon style={{marginLeft:'14vw'}}>
+                          Search
+                          <Icon name='search' />
+                          </Button>  
+                          </Form>
+
+
+                          </Grid.Column>
+                          <Grid.Column>
+                    
+                        </Grid.Column>
+                      </Grid>
+                     
+                  { 
+                  this.state.resultyt.map((link , i)=> {  
               
-                return( 
-                <div key={i}  > <iframe width="560" height="315" src={link} frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen  ></iframe> <hr/></div>
-                );                                  }
+                  return( 
+                  <div className='youtube' key={i}  > <iframe width="1000" height="600" src={link} frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen  ></iframe> </div>
+                  ) ;                                  }
                                     )
-          }
+                   }
+
+
           
-          </div>
+         </div>
     );
 
   }

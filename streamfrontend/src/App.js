@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {Routes} from './routes.js';
 import {browserHistory} from './historyobj.js';
@@ -11,6 +10,9 @@ import {Search} from './stream.js';
 import { websocket } from './websocket.js';
 import InputSlider from 'react-input-slider';
 import ReactPlayer from 'react-player';
+import Youtube from './youtubefetch.js';
+import YouTubePlayer from 'react-player/lib/players/YouTube'
+
 
 class App extends Component{
 
@@ -19,7 +21,7 @@ class App extends Component{
   {
     super(props);
     
-    this.state = { url:"https://www.youtube.com/watch?v=H2f7MZaw3Yo", playing:true , muted:false , volume:0.5 , currtime:0 , visible:false , duration:100};
+    this.state = { url:"https://www.youtube.com/watch?v=H2f7MZaw3Yo", playing:true , muted:false , volume:0.5 , currtime:0 , visible:false , duration:100 , clickedlink:""};
     this.componentDidMount = this.componentDidMount.bind(this);
     this.handlePlay = this.handlePlay.bind(this);
     this.handlePause = this.handlePause.bind(this);
@@ -180,8 +182,30 @@ class App extends Component{
 
   ref = (player) => {
     this.player = player;
-  }  
+  }
 
+ 
+
+  handleEnd(event)
+  {
+  	this.setState({url:"" , currtime:0 },
+  		() => {
+				let data = {
+		      	url :this.state.url , 
+		      	playing:this.state.playing ,
+		      	muted:this.state.muted , 
+		      	volume:this.state.volume , 
+		      	currtime : this.state.currtime ,
+		      	duration : this.state.duration ,
+		    	};
+		    	websocket.send(JSON.stringify(data));
+		    	console.log("Video has Ended");
+
+		  		}
+
+  		);
+
+  }
 
 
   render() {
@@ -226,7 +250,9 @@ class App extends Component{
                            })
                       .catch(error => console.error('Error:', error));
 
-              this.props.history.push("/profile");  }} >
+              browserHistory.push("/profile"); 
+              window.location.reload();
+               }} >
               <Icon name='address card outline' />
               Profile
             </Menu.Item>
@@ -235,7 +261,7 @@ class App extends Component{
 
 
             {(localStorage.getItem('token')) ?
-            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/logout"); window.location.reload(); }}>
+            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/logout"); window.location.reload();  }}>
               <Icon name='camera' />
               Log Out
             </Menu.Item>
@@ -245,7 +271,7 @@ class App extends Component{
 
 
             {(browserHistory.location.pathname !== '/') ?
-            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/"); window.location.reload(); }}>
+            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/");  window.location.reload(); }}>
               <Icon name='camera' />
               stream
             </Menu.Item>
@@ -253,10 +279,20 @@ class App extends Component{
             }
 
 
+
             {(browserHistory.location.pathname === '/search') ? null : (localStorage.getItem('token')) ?  
-            <Menu.Item as='a' onClick={()=>{ this.props.history.push("/search"); window.location.reload(); }}>
-              <Icon name='camera' />
+            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/search"); window.location.reload(); }}>
+              <Icon name='search' />
               Search
+            </Menu.Item>
+            :null
+            }
+
+
+            {(browserHistory.location.pathname === '/youtube') ? null : (localStorage.getItem('token')) ?  
+            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/youtube"); window.location.reload();   }}>
+              <Icon name='camera' />
+              Search On Youtube
             </Menu.Item>
             :null
             }
@@ -283,14 +319,14 @@ class App extends Component{
                     <div className="scroll" >
                     		<BrowserRouter >
 							<div style={{height:'80vh'}}>
-								<Route exact path="/search"  render={ () => <Search   url={this.state.url} handleSubmit={this.handleSubmit} /> } /> 
-
+								<Route exact path="/search"  render={ () => <Search    handleSubmit={this.handleSubmit} /> } /> 
+								
 								<Route exact path="/"  render={ () => 
 									        <div className='player'>
           
           										<ReactPlayer ref={this.ref} url={this.state.url} playing={this.state.playing} 
           											volume={this.state.volume} muted={this.state.muted} 
- 	        										onPlay={this.handlePlay} onPause={this.handlePause} 
+ 	        										onPlay={this.handlePlay} onPause={this.handlePause} onEnded={this.handleEnd.bind(this)} 
  	        										onProgress={this.handleProgress} onDuration={this.handleDuration} 
  	        										style={{height:'70vh' , width:'70vw'  , marginLeft:'7vw'}}
           
@@ -301,6 +337,7 @@ class App extends Component{
 
 
 								} />
+
 								
 							</div>
 							</BrowserRouter>

@@ -26,7 +26,8 @@ export class Search extends Component
   {
     
     console.log(this.state.url);
-    this.props.handleSubmit(this.state.url);
+    this.props.handleSubmit(this.state.url); 
+    
   }
   render()
   {

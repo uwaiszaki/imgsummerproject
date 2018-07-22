@@ -36,7 +36,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-
+#from .models import StaffModel
 # Create your views here.
 
 
@@ -46,23 +46,26 @@ class CreateUser(generics.CreateAPIView):  # Provides only POST Method
 	serializer_class = UserSerializer
 
 
-	def perform_create(self ,serializer):
-		validated_data = serializer.validated_data
+	
 		
-		def perform_create(self ,validated_data):
-			if validated_data['password'] == validated_data['confirm_password']:
+		
+	def perform_create(self ,validated_data):
+		validated_data = serializer.validated_data
+		if validated_data['password'] == validated_data['confirm_password']:
 
-				userobj = User.objects.create(
-				first_name = validated_data['first_name'] , 
-				last_name = validated_data['last_name'] ,
-				username = validated_data['username'] ,
+			userobj = User.objects.create(
+			first_name = validated_data['first_name'] , 
+			last_name = validated_data['last_name'] ,
+			username = validated_data['username'] ,
 
-				is_active = False , 
+			is_active = False , 
 			 
-				)
-				userobj.set_password(validated_data['password'])
+			)
+
+
+			userobj.set_password(validated_data['password'])
 			
-				userobj.save()
+			userobj.save()
 			
 		
 			

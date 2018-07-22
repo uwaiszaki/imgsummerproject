@@ -11,6 +11,7 @@ import Signup from './signup.js';
 import App from './App.js';
 import Profile from './profile.js';
 import AdminView from './admin.js';
+import Youtube from './youtubefetch.js';
 export class Routes extends React.Component
 {	
 	render()
@@ -21,7 +22,7 @@ export class Routes extends React.Component
 								<Route exact path="/login" component={Login} />
 								<Route exact path="/register" component={Signup} />
 								<Route exact path="/"  component={App} />
-								<Route exact path="/logout" component={function(){ localStorage.removeItem('token');  browserHistory.replace("/");  }} />
+								<Route exact path="/logout" component={function(){ localStorage.removeItem('token');  browserHistory.replace("/"); browserHistory.index=0; }} />
 								<Route exact path="/profile" render={() => ( localStorage.getItem('token') ?  
 																			<Profile/> : <Redirect to="/login" />
 																)}
@@ -31,6 +32,11 @@ export class Routes extends React.Component
 																			<App/> : <Redirect to="/login" />
 									)}  
 								 />
+								<Route exact path="/youtube"  render={() => (localStorage.getItem('token') ?  
+																			<Youtube/> : <Redirect to="/login" />
+																	)}  
+								 />
+
 							</div>
 						</BrowserRouter>
 					);

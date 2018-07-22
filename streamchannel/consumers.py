@@ -26,7 +26,7 @@ class UserConsumer(AsyncWebsocketConsumer):
         muted = text_data_json['muted']
         volume = text_data_json['volume']
         currtime = text_data_json['currtime']
-        xmax = text_data_json['xmax']
+        duration = text_data_json['duration']
         # Send message to room group
         await self.channel_layer.group_send(
             'StreamUsers' , 
@@ -37,7 +37,7 @@ class UserConsumer(AsyncWebsocketConsumer):
                 'muted': muted,
                 'volume': volume,
                 'currtime': currtime,
-                'xmax':xmax , 
+                'duration':duration , 
             }
         )
         
@@ -50,14 +50,14 @@ class UserConsumer(AsyncWebsocketConsumer):
         muted = event['muted']
         volume = event['volume']
         currtime = event['currtime']
-        xmax = event['xmax']
+        duration = event['duration']
         await self.send(text_data=json.dumps({
             'url': url,
             'playing': playing,
             'muted': muted,
             'volume': volume,
             'currtime': currtime,
-            'xmax' : xmax , 
+            'duration' : duration , 
         }))
 
 """

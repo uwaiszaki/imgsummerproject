@@ -2,6 +2,8 @@
   text-align: center;
   padding: 0;
   height: 92.4vh;
+  background-color: blue;
+
 }
 
 .App-logo {
@@ -67,6 +69,17 @@ body{
 .footer{
   height: .1vh;
   margin: 0;
+
+}
+
+.youtube{
+  margin-left: 24vw;
+  margin-top: 10vh;
+}
+
+.yplayer{
+  height: 100vh;
+  overflow: scroll;
 
 }
 @keyframes App-logo-spin {
