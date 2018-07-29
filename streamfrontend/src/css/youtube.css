@@ -1,0 +1,37 @@
+.videopics
+{	margin-top: 4vh;
+	overflow-x: auto;
+	overflow-y: hidden;
+    white-space: nowrap;
+    height: 60vh;
+}
+
+.videopicsclick
+{	margin-left: 80px;
+	display: inline-block;
+	text-align: center;
+}
+
+.image:hover{
+	opacity: .5;
+	cursor: pointer;
+}
+
+.playing:hover{
+
+	color: #dd0005;
+}
+
+.play{
+	display: none;
+
+}
+
+.playing:hover .play{
+  display: block;
+  color: black;
+  overflow: hidden;
+}
+
+
+

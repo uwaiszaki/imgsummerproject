@@ -10,7 +10,9 @@
     "react-rangeslider": "^2.2.0",
     "react-redux": "^5.0.7",
     "react-scripts": "0.9.5",
+    "semantic-ui": "^2.3.3",
     "semantic-ui-css": "^2.3.3",
+    "semantic-ui-less": "^2.3.3",
     "semantic-ui-react": "^0.82.0"
   },
   "devDependencies": {

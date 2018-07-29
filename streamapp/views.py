@@ -49,7 +49,7 @@ class CreateUser(generics.CreateAPIView):  # Provides only POST Method
 	
 		
 		
-	def perform_create(self ,validated_data):
+	def perform_create(self ,serializer):
 		validated_data = serializer.validated_data
 		if validated_data['password'] == validated_data['confirm_password']:
 
@@ -61,13 +61,14 @@ class CreateUser(generics.CreateAPIView):  # Provides only POST Method
 			is_active = False , 
 			 
 			)
+			
 
 
 			userobj.set_password(validated_data['password'])
 			
 			userobj.save()
 			
-		
+			
 			
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):

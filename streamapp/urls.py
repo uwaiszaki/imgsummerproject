@@ -15,7 +15,7 @@ urlpatterns = [
 	url(r'^details/$', Details.as_view()),
 	url(r'^detail/(?P<username>([a-zA-Z])([a-zA-Z0-9]*)+)$', UserDetail.as_view()),
 	url(r'^getuser/(?P<key>([a-zA-Z0-9]+))$' ,GetUser.as_view()) , 
-	url(r'^login/$', views.obtain_auth_token) ,
+	url(r'^login/$', views.obtain_auth_token) ,	
 
 
 ]

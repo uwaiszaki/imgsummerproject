@@ -1,22 +1,29 @@
-export const  PLAY_CHANGE = 'PLAY_CHANGE'; 
-export const TIME_CHANGE = 'TIME_CHANGE';
-export const MUTE_CHANGE = 'MUTE_CHANGE';
-export const URL_CHANGE = 'URL_CHANGE';
+import { PLAY_CHANGE , TIME_CHANGE , MUTE_CHANGE , URL_CHANGE , VOL_CHANGE  , DUR_CHANGE} from './actiontypes.js';
 
-export const playpauseChange = (playing = true) => ({
+export const playpauseChange = (playing) => ({
     type: PLAY_CHANGE,
-    playing
+    payload:playing
 });
-export const timeChange = (currtime = 0) => ({
+export const timeChange = (currtime) => ({
     type: TIME_CHANGE,
-    currtime
+    payload:currtime
 });
-export const muteChange = (muted=false) => ({
+export const muteChange = (muted) => ({
     type: MUTE_CHANGE,
-    muted
+    payload:muted
 });
 
-export const urlChange = (url='') => ({
+export const urlChange = (url) => ({
     type: URL_CHANGE,
-    url
+    payload:url
 });
+
+export const volChange = (volume) => ({
+	type:VOL_CHANGE,
+	payload:volume
+	});
+
+export const durChange = (duration) => ({
+	type:DUR_CHANGE,
+	payload:duration
+	});

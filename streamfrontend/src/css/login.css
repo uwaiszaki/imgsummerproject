@@ -1,0 +1,24 @@
+.loginsignup{
+	background-color: #ecf0f1;
+}
+
+.container
+{
+	width: 100vw;
+	height: 100vh;
+	margin-left:0px!important;
+	background-color: #ecf0f1;
+	padding: 0; 
+}
+
+.Main
+{
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+}
+
+.thumbs.up.icon.large
+{
+	color: blue;
+}

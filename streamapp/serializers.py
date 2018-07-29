@@ -8,13 +8,13 @@ class UserSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(max_length=100 , write_only = True)
 	confirm_password = serializers.CharField(max_length=100 , write_only = True )
 	
-
 	class Meta:
 		model = User
 		fields = (
-			'first_name' , 'last_name' , 'username' , 'password' , 'confirm_password',
+			'first_name' , 'last_name' , 'username' , 'password' , 'confirm_password', 'is_staff' , 'is_active' ,
 
 			)
+		
 
 
 class TokenSerializer(serializers.ModelSerializer):

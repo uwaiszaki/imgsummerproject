@@ -1,0 +1,17 @@
+.adminview{
+	background-color: #ecf0f1;
+	width: 100vw;
+	height: 100vh;
+}
+
+.view{
+	display: inline;
+	position: relative;
+	left: 10vw;
+	border: solid red 5px;
+}
+
+.ui.card.admincard
+{
+	border: solid red 2px;
+}

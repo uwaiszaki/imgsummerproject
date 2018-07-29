@@ -1,0 +1,9 @@
+.footer{
+	overflow: auto;
+    white-space: nowrap;
+}
+
+.footer.ui.divided.three.column.grid
+{
+	display: inline-block;
+}

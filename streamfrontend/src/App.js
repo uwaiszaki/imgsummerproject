@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
+import './css/stream.css';
 import {Routes} from './routes.js';
-import {browserHistory} from './historyobj.js';
+import history from './components/historyobj.js';
 import { Dropdown, Button, Header, Icon, Image, Menu, Segment, Sidebar   , Tab , Grid , Input ,Form} from 'semantic-ui-react';
-import Login from './login.js';
+import Login from './components/login.js';
 import { BrowserRouter as Router, Switch, Route, Link , Redirect } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
-import {Search} from './stream.js';
-import { websocket } from './websocket.js';
-import InputSlider from 'react-input-slider';
-import ReactPlayer from 'react-player';
-import Youtube from './youtubefetch.js';
-import YouTubePlayer from 'react-player/lib/players/YouTube'
-
+import Search from './components/stream.js';
+import Youtube from './components/youtubefetch.js';
+import Player from './components/player.js';
+import Footer from './components/footer.js';
 
 class App extends Component{
 
@@ -21,19 +19,7 @@ class App extends Component{
   {
     super(props);
     
-    this.state = { url:"https://www.youtube.com/watch?v=H2f7MZaw3Yo", playing:true , muted:false , volume:0.5 , currtime:0 , visible:false , duration:100 , clickedlink:""};
-    this.componentDidMount = this.componentDidMount.bind(this);
-    this.handlePlay = this.handlePlay.bind(this);
-    this.handlePause = this.handlePause.bind(this);
-    this.handleProgress = this.handleProgress.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleDuration=this.handleDuration.bind(this);
-    this.handleTimeChange=this.handleTimeChange.bind(this);
-
-    //this.handleDuration = this.handleDuration.bind(this);
-    //this.handleEnd = this.handleEnd.bind(this);
-    //this.handleError = this.handleError.bind(this);
+    this.state = { visible:false };
 
   }
   
@@ -44,178 +30,14 @@ class App extends Component{
 
 
 
-  componentDidMount()
-  {
-    
-    
-    websocket.onmessage = (event) => 
-    { 
-      let data = JSON.parse(event.data);
-      if(data['currtime'] !== this.state.currtime )
-      {
-        this.player.seekTo(data['currtime']);
-
-      }
-      this.setState({
-        url : data['url'] , 
-        playing : data['playing'] ,
-        muted : data['muted'] ,
-        volume : data['volume'] ,
-        currtime : data['currtime'] , 
-        duration : data['duration'] , 
-
-      });
-        this.player.volume = this.state.volume;
-        console.log(this.state);
-        console.log('componentDidMount');
-    }
-
-            
-      
-
-  } 
-
-
-  handlePlay()
-  {
-    this.setState({playing:true});
-    let data = {
-      url :this.state.url , 
-      playing:this.state.playing ,
-      muted:this.state.muted , 
-      volume:this.state.volume , 
-      currtime : this.state.currtime ,
-      duration : this.state.duration , 
-    };
-    websocket.send(JSON.stringify(data));
-    console.log("handlePlay");
-  }
-
-  handlePause()
-  {
-    this.setState({playing:false});
-    let data = {
-      url :this.state.url , 
-      playing:this.state.playing ,
-      muted:this.state.muted , 
-      volume:this.state.volume , 
-      currtime : this.state.currtime ,
-      duration : this.state.duration ,
-    };
-    websocket.send(JSON.stringify(data));
-    console.log("handlePause");
-  }
-  handleProgress(progressinfo)
-  { 
-    this.setState({ currtime:progressinfo['playedSeconds'] });
-    
-    let data = {
-      url :this.state.url , 
-      playing:this.state.playing ,
-      muted:this.state.muted , 
-      volume:this.state.volume , 
-      currtime : this.state.currtime ,
-      duration : this.state.duration ,
-    };
-    websocket.send(JSON.stringify(data));
-    console.log("handleProgress");  
-  }
-
-  handleDuration(duration)
-  {
-  	this.setState({duration:duration});
-  	let data = {
-      url :this.state.url , 
-      playing:this.state.playing ,
-      muted:this.state.muted , 
-      volume:this.state.volume , 
-      currtime : this.state.currtime ,
-      duration : this.state.duration ,
-    };
-    websocket.send(JSON.stringify(data));
-    console.log("handleDuration");  
-  }
-
-  handleSubmit(url)
-  {
-    event.preventDefault();
-
-    this.setState({url:url} , console.log(this.state.url));
-    
-
-  }
-
-  handleChange(newstate)
-  {
-    this.setState(newstate);
-    console.log(this.state.url);
-  }
-
-   handlepasteChange(event)
-  {
-    this.setState({url:event.target.value});
-    console.log(this.state.url);
-  }
-
-  handleTimeChange(event)
-  {
-  	this.setState({currtime:event.target.value} ,
-  		() => {
-  			this.player.seekTo(this.state.currtime);
-	
-	
-		let data = {
-      	url :this.state.url , 
-      	playing:this.state.playing ,
-      	muted:this.state.muted , 
-      	volume:this.state.volume , 
-      	currtime : this.state.currtime ,
-      	duration : this.state.duration ,
-    	};
-    	websocket.send(JSON.stringify(data));
-    	console.log("Time Of Video Changed");
-
-  		}
-  		); 
-  	
-  }
-
-  ref = (player) => {
-    this.player = player;
-  }
-
- 
-
-  handleEnd(event)
-  {
-  	this.setState({url:"" , currtime:0 },
-  		() => {
-				let data = {
-		      	url :this.state.url , 
-		      	playing:this.state.playing ,
-		      	muted:this.state.muted , 
-		      	volume:this.state.volume , 
-		      	currtime : this.state.currtime ,
-		      	duration : this.state.duration ,
-		    	};
-		    	websocket.send(JSON.stringify(data));
-		    	console.log("Video has Ended");
-
-		  		}
-
-  		);
-
-  }
-
-
   render() {
-  	var slider = document.getElementById('timeslider');
+  	
 
-  	const that = this;
     return (
- 
-      <div className="App">
-       
+ 			
+
+      <div className="container">
+       	
         
         <Sidebar.Pushable as={Segment} >
           <Sidebar
@@ -236,7 +58,7 @@ class App extends Component{
             </Menu.Item>
             }
             
-            {(browserHistory.location.pathname === '/profile')   ?  null : (localStorage.getItem('token')) ? 
+            {(history.location.pathname === '/profile')   ?  null : (localStorage.getItem('token')) ? 
             <Menu.Item as='a' onClick={()=>{ 
                       fetch('http://127.0.0.1:8000/stream/getuser/'+localStorage.getItem('token'))
                       .then(res => res.json())
@@ -250,10 +72,10 @@ class App extends Component{
                            })
                       .catch(error => console.error('Error:', error));
 
-              browserHistory.push("/profile"); 
-              window.location.reload();
+              history.push("/profile"); 
+              
                }} >
-              <Icon name='address card outline' />
+              <Icon name='address card outline' className='sidebaricons'/>
               Profile
             </Menu.Item>
             : null
@@ -261,8 +83,8 @@ class App extends Component{
 
 
             {(localStorage.getItem('token')) ?
-            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/logout"); window.location.reload();  }}>
-              <Icon name='camera' />
+            <Menu.Item as='a' onClick={()=>{ history.push("/logout");  this.setState({ e: Math.random() }); }}>
+              <Icon name='camera' className='sidebaricons'/>
               Log Out
             </Menu.Item>
             :null
@@ -270,77 +92,70 @@ class App extends Component{
 
 
 
-            {(browserHistory.location.pathname !== '/') ?
-            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/");  window.location.reload(); }}>
-              <Icon name='camera' />
+            {(history.location.pathname === '/') ? null : (localStorage.getItem('is_staff')==='true') ? 
+            <Menu.Item as='a' onClick={()=>{ history.push("/"); this.setState({ d: Math.random() }); }}>
+              <Icon name='camera' className='sidebaricons'/>
               stream
             </Menu.Item>
-            :null
+            : null
             }
 
 
 
-            {(browserHistory.location.pathname === '/search') ? null : (localStorage.getItem('token')) ?  
-            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/search"); window.location.reload(); }}>
-              <Icon name='search' />
+            {(history.location.pathname === '/search') ? null : (localStorage.getItem('token')) ?  
+            <Menu.Item as='a' onClick={()=>{ history.push("/search"); this.setState({ c: Math.random() }); }}>
+              <Icon name='search' className='sidebaricons'/>
               Search
             </Menu.Item>
             :null
             }
 
 
-            {(browserHistory.location.pathname === '/youtube') ? null : (localStorage.getItem('token')) ?  
-            <Menu.Item as='a' onClick={()=>{ browserHistory.push("/youtube"); window.location.reload();   }}>
-              <Icon name='camera' />
+            {(history.location.pathname === '/youtube') ? null : (localStorage.getItem('token')) ?  
+            <Menu.Item as='a' onClick={()=>{ history.push("/youtube");    }}>
+              <Icon name='camera' className='sidebaricons'/>
               Search On Youtube
             </Menu.Item>
             :null
             }
 
+            {(history.location.pathname==='/admin') ? null : (localStorage.is_staff==='true') ?
+            <Menu.Item as='a' onClick={()=>{ history.push("/admin");    }}>
+              <Icon name='camera' className='sidebaricons'/>
+              Admin View
+            </Menu.Item>
+        	: null				}
           </Sidebar>
 
           <Sidebar.Pusher>
                           
                           
               <Segment basic className="mainstream">
-
-                              <Button icon onClick={this.handleButtonClick} className="buttonA">
-                              <Icon name='list'/>
+           						
+                              <Button icon onClick={this.handleButtonClick} className="buttonA" color='true red'  >
+                              <Icon name='list' />
                               </Button>
+
                      <div className="topheader">
-                       <Header as='h1' icon textAlign='center'>
-                       <Icon name='music' circular />
+                       <Header as='h1' icon textAlign='center' icon color='true red'>
+                       <Icon name='music' />
                        <Header.Content>Stream</Header.Content>
                        </Header>
                      </div>
 
-
-
                     <div className="scroll" >
                     		<BrowserRouter >
-							<div style={{height:'80vh'}}>
-								<Route exact path="/search"  render={ () => <Search    handleSubmit={this.handleSubmit} /> } /> 
-								
-								<Route exact path="/"  render={ () => 
-									        <div className='player'>
-          
-          										<ReactPlayer ref={this.ref} url={this.state.url} playing={this.state.playing} 
-          											volume={this.state.volume} muted={this.state.muted} 
- 	        										onPlay={this.handlePlay} onPause={this.handlePause} onEnded={this.handleEnd.bind(this)} 
- 	        										onProgress={this.handleProgress} onDuration={this.handleDuration} 
- 	        										style={{height:'70vh' , width:'70vw'  , marginLeft:'7vw'}}
-          
-          										/>
-         
-        									</div>
-
-
-
-								} />
-
-								
-							</div>
-							</BrowserRouter>
+            							<div style={{height:'80vh'}}>
+            								<Switch>
+            								<Route exact path="/search"  render={ () => <Search/> } /> 
+            								<Route exact path="/youtube"  render={ () => <Youtube/> } />
+            								
+                            {(localStorage.getItem('is_staff')==='true') ?
+                            <Route exact path="/"  render={() => <Player /> }/>
+                            : <Redirect to="/search" />}
+            								</Switch>
+            							</div>
+            						</BrowserRouter>
 
 
                     </div>
@@ -351,36 +166,18 @@ class App extends Component{
             </Segment>
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-                            <div className="footer" >
-                            <Grid columns={3} divided className="footer">
-                              <Grid.Column width={1} floated="left">
-                                <Header as="h6" icon textAlign='center'>
-                                {(this.state.playing === false) ?
-                                <Icon name="play" onClick={()=>this.setState({playing:true})}/>
-                                : <Icon name="pause" onClick={()=>this.setState({playing:false})}/>
-                            	}
-                                </Header>
-                              </Grid.Column>
-                              <Grid.Column width={13}>
-                              		<Input type="range" min="0" max={this.state.duration} 
-                              		value={this.state.currtime} onChange={this.handleTimeChange} style={{width:"80vw"}}/>
-                              </Grid.Column>
-                              <Grid.Column width={2} floated="right" >
-                              	<Header as="h6" icon>
-                                <Icon name="volume up" />
-                                </Header> 
-                                <Input type="range" min="0" max="100" style={{width:"6vw"}} value={this.state.volume} 
-                                	onChange={(e)=> { this.setState({volume:e.target.value});  this.player.volume = this.state.volume;} }/>
-                              </Grid.Column>
-                            </Grid>
-                                 
-                            </div>
+                          <div >  
+                            <Footer />
+                          </div>       
+                            
       
       </div>
 
       );
   }
 }
+
+
 
 
 export default App;
